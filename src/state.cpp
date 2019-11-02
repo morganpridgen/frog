@@ -20,6 +20,9 @@ GameState *PlayState::update(TXL_Controller *ctrls[4]) {
 }
 
 void PlayState::render() {
+  for (int i = 0; i < 12; i++) {
+    TXL_RenderQuad({0.0f, 30.0f * i, 640.0f, 30.0f}, {0.0f, (24 - i) / 24.0f, (24 - i) / 24.0f, 1.0f});
+  }
   lvl.render(cX, cY);
   frog.render(cX, cY);
 }

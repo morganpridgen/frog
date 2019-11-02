@@ -11,7 +11,7 @@ bool Frog::init() {
 void Frog::update(TXL_Controller *ctrl, Level &lvl) {
   mX = ctrl->mouseX(), mY = ctrl->mouseY();
   
-  if (ctrl->buttonClick(CtrlA) && info.grounded) {
+  if (ctrl->buttonClick(CtrlM) && info.grounded) {
     info.grounded = 0;
     float d, r;
     float dX = mX + lCX - info.x, dY = mY + lCY - info.y;
@@ -19,6 +19,7 @@ void Frog::update(TXL_Controller *ctrl, Level &lvl) {
     r = atan2(dY, dX);
     info.xV = (d * cos(r)) / 8.0f;
     info.yV = (d * sin(r)) / 8.0f;
+    ctrl->rumble(d / 512.0f + 0.25f, 250);
   }
   
   motionCalc();
