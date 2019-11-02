@@ -2,7 +2,7 @@
 #include <cmath>
 
 bool Frog::init() {
-  if (!frogTex.load(TXL_DataPath("frog.png"), 16, 16)) return 0;
+  if (!frogTex.load(TXL_DataPath("frog.png"), 32, 16)) return 0;
   dir = 0;
   info.x = 320.0f, info.y = 180.0f, info.xV = 0.0f, info.yV = 0.0f;
   info.grounded = 0;
@@ -79,10 +79,11 @@ void Frog::colCalc(Level &lvl) {
 void Frog::render(float cX, float cY) {
   lCX = cX, lCY = cY;
   
-  //TXL_RenderQuad(info.x - cX, info.y - cY, 16.0f, 16.0f, {0.25f, 0.75f, 0.25f, 1.0f});
-  if (dir) frogTex.setClip(16, 0, 0, 16);
-  else frogTex.setClip(0, 16, 0, 16);
-  frogTex.render(info.x - cX, info.y - cY, 1, 1, 0);
+  int xOff = 0, yOff = 0;
+  if (!info.grounded) xOff = 16;
+  if (dir) frogTex.setClip(xOff + 16, xOff, yOff, yOff + 16);
+  else frogTex.setClip(xOff, xOff + 16, yOff, yOff + 16);
+  frogTex.render(info.x - cX, info.y - 7 - cY);
   
   TXL_RenderQuad(mX, mY, 16, 2, {1.0f, 1.0f, 1.0f, 1.0f});
   TXL_RenderQuad(mX, mY, 2, 16, {1.0f, 1.0f, 1.0f, 1.0f});
