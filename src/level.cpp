@@ -55,6 +55,9 @@ void Level::render(float cX, float cY) {
       TXL_RenderQuad({i * tileSize - cX, 360.0f - ((terrain[i * depth + j] - height) * tileSize) - cY, tileSize, (terrain[i * depth + j] - height) * tileSize}, {0.0f, 1.0f, 0.0f, 1.0f});
       height += terrain[i * depth + j];
     }
+    if (depth % 2 == 0) {
+      TXL_RenderQuad({i * tileSize - cX, 0, tileSize, 360.0f - height * tileSize}, {0.0f, 1.0f, 0.0f, 1.0f});
+    }
   }
 }
 

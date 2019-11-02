@@ -62,6 +62,12 @@ void Frog::colCalc(Level &lvl) {
         info.xV = round(info.xV * -0.75f);
         break;
       }
+      if (!lvl.inFloor(info.x, info.y + i)) { // ceiling check
+        info.y += i + 1;
+        info.yV = round(info.yV * -0.5f);
+        info.xV = round(info.xV * 0.5f);
+        break;
+      }
     }
   }
 }
