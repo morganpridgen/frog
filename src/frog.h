@@ -14,6 +14,8 @@ struct FrogInfo {
 
 class Frog {
   private:
+    TXL_Texture frogTex;
+    bool dir;
     FrogInfo info;
     float mX, mY, lCX, lCY;
     void motionCalc();

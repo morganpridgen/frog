@@ -2,6 +2,8 @@
 #include <cmath>
 
 bool Frog::init() {
+  if (!frogTex.load(TXL_DataPath("frog.png"), 16, 16)) return 0;
+  dir = 0;
   info.x = 320.0f, info.y = 180.0f, info.xV = 0.0f, info.yV = 0.0f;
   info.grounded = 0;
   mX = 0.0f, mY = 0.0f, lCX = 0.0f, lCY = 0.0f;
@@ -20,6 +22,7 @@ void Frog::update(TXL_Controller *ctrl, Level &lvl) {
     info.xV = (d * cos(r)) / 8.0f;
     info.yV = (d * sin(r)) / 8.0f;
     ctrl->rumble(d / 512.0f + 0.25f, 250);
+    dir = info.xV < 0;
   }
   
   motionCalc();
@@ -76,14 +79,17 @@ void Frog::colCalc(Level &lvl) {
 void Frog::render(float cX, float cY) {
   lCX = cX, lCY = cY;
   
-  TXL_RenderQuad(info.x - cX, info.y - cY, 16.0f, 16.0f, {0.25f, 0.75f, 0.25f, 1.0f});
+  //TXL_RenderQuad(info.x - cX, info.y - cY, 16.0f, 16.0f, {0.25f, 0.75f, 0.25f, 1.0f});
+  if (dir) frogTex.setClip(16, 0, 0, 16);
+  else frogTex.setClip(0, 16, 0, 16);
+  frogTex.render(info.x - cX, info.y - cY, 1, 1, 0);
   
   TXL_RenderQuad(mX, mY, 16, 2, {1.0f, 1.0f, 1.0f, 1.0f});
   TXL_RenderQuad(mX, mY, 2, 16, {1.0f, 1.0f, 1.0f, 1.0f});
 }
 
 void Frog::end() {
-
+  frogTex.free();
 }
 
 void Frog::modCam(float &cX, float &cY) {
