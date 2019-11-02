@@ -43,7 +43,7 @@ void Level::update() {
 }
 
 void Level::render(float cX, float cY) {
-  for (int i = 0; i < length; i++) {
+  for (int i = cX / tileSize; i < (cX + 640.0f) / tileSize; i++) {
     bool terrainRender = 1;
     int height = 0;
     for (int j = 0; j < depth; j++) {
@@ -56,7 +56,7 @@ void Level::render(float cX, float cY) {
       height += terrain[i * depth + j];
     }
     if (depth % 2 == 0) {
-      TXL_RenderQuad({i * tileSize - cX, 0, tileSize, 360.0f - height * tileSize}, {0.0f, 1.0f, 0.0f, 1.0f});
+      TXL_RenderQuad({i * tileSize - cX, 0, tileSize, 360.0f - height * tileSize - cY}, {0.0f, 1.0f, 0.0f, 1.0f});
     }
   }
 }
@@ -72,9 +72,9 @@ void Level::modCam(float &cX, float &cY) {
   
   int scanStart = cX / tileSize;
   int wCamTarget = 0;
-  for (int i = 0; i < 21; i++) wCamTarget += terrain[(i + scanStart) * depth];
-  float camTarget = (wCamTarget / 21) * tileSize;
-  cY += (wCamTarget - cY) / 8.0f;
+  for (int i = 0; i < 20; i++) wCamTarget += terrain[(i + scanStart) * depth];
+  float camTarget = 90.0f - (wCamTarget / 20) * tileSize;
+  cY += (camTarget - cY) / 8.0f;
   if (cY > 0.0f) cY = 0.0f;
 }
 
