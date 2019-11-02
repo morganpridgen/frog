@@ -1,6 +1,8 @@
 #ifndef stateh
 #define stateh
 #include <TEXEL/texel.h>
+#include "frog.h"
+#include "level.h"
 
 class GameState {
   public:
@@ -11,6 +13,10 @@ class GameState {
 };
 
 class PlayState : public GameState {
+  private:
+    Frog frog;
+    Level lvl;
+    float cX, cY;
   public:
     virtual bool init();
     virtual GameState *update(TXL_Controller*[4]);
