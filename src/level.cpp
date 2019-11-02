@@ -108,6 +108,9 @@ bool Level::inFloor(float x, float y) {
   int pY = (360.0f - y) / tileSize + 1;
   int h = 0, lH = 0;
   bool isSolid = 1;
+  
+  if (pX < 0 || pX >= length || pY < 0) return 1;
+  
   for (int i = 0; i < depth; i++) {
     h += terrain[pX * depth + i];
     if (pY <= h && pY >= lH) return isSolid;
