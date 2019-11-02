@@ -39,15 +39,29 @@ void Frog::motionCalc() {
 }
 
 void Frog::colCalc(Level &lvl) {
-  float floorH = lvl.getBelowHeight(info.x, info.y);
-  if (info.y > floorH) {
-    info.y = floorH - 1.0f;
-    info.yV = round(info.yV * -0.5f);
-    info.xV = round(info.xV * 0.5f);
-    if (info.yV > -3.0f) {
-      info.xV = 0.0f;
-      info.yV = 0.0f;
-      info.grounded = 1;
+  if (lvl.inFloor(info.x, info.y)) {
+    for (int i = 0; i < 128; i++) {
+      if (!lvl.inFloor(info.x, info.y - i)) { // floor check
+        info.y -= i + 1;
+        info.yV = round(info.yV * -0.5f);
+        info.xV = round(info.xV * 0.5f);
+        if (info.yV > -3.0f) {
+          info.xV = 0.0f;
+          info.yV = 0.0f;
+          info.grounded = 1;
+        }
+        break;
+      }
+      if (!lvl.inFloor(info.x - i, info.y)) { // left wall check
+        info.x -= i + 1;
+        info.xV = round(info.xV * -0.75f);
+        break;
+      }
+      if (!lvl.inFloor(info.x + i, info.y)) { // right wall check
+        info.x += i + 1;
+        info.xV = round(info.xV * -0.75f);
+        break;
+      }
     }
   }
 }

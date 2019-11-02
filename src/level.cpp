@@ -104,14 +104,15 @@ float Level::getAboveHeight(float x, float y) {
 }
 
 bool Level::inFloor(float x, float y) {
-  int t = x / tileSize;
-  int pY = y / tileSize;
+  int pX = x / tileSize;
+  int pY = (360.0f - y) / tileSize + 1;
   int h = 0, lH = 0;
   bool isSolid = 1;
   for (int i = 0; i < depth; i++) {
-    h += terrain[t * depth + i];
+    h += terrain[pX * depth + i];
     if (pY <= h && pY >= lH) return isSolid;
     lH = h;
     isSolid = !isSolid;
   }
+  return isSolid;
 }
