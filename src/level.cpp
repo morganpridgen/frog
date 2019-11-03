@@ -52,11 +52,19 @@ void Level::render(float cX, float cY) {
         height += terrain[i * depth + j];
         continue;
       }
-      TXL_RenderQuad({i * tileSize - cX, 360.0f - ((terrain[i * depth + j] - height) * tileSize) - cY, tileSize, (terrain[i * depth + j] - height) * tileSize}, {0.0f, 1.0f, 0.0f, 1.0f});
+      //TXL_RenderQuad({i * tileSize - cX, 360.0f - ((terrain[i * depth + j] - height) * tileSize) - cY, tileSize, (terrain[i * depth + j] - height) * tileSize}, {0.0f, 1.0f, 0.0f, 1.0f});
+      for (int k = 0; k < terrain[i * depth + j]; k++) {
+        if (terrain[i * depth + j] - k == 1) TXL_RenderQuad({i * tileSize - cX, 360.0f - ((k - height + 1) * tileSize) - cY, tileSize, tileSize}, {0.0f, 1.0f, 0.0f, 1.0f});
+        else TXL_RenderQuad({i * tileSize - cX, 360.0f - ((k - height + 1) * tileSize) - cY, tileSize, tileSize}, {0.5f, 0.25f, 0.0f, 1.0f});
+      }
       height += terrain[i * depth + j];
     }
     if (depth % 2 == 0) {
-      TXL_RenderQuad({i * tileSize - cX, 0, tileSize, 360.0f - height * tileSize - cY}, {0.0f, 1.0f, 0.0f, 1.0f});
+      //TXL_RenderQuad({i * tileSize - cX, 0, tileSize, 360.0f - height * tileSize - cY}, {0.0f, 1.0f, 0.0f, 1.0f});
+      while (height * tileSize - cX < 360) {
+        TXL_RenderQuad({i * tileSize - cX, 360.0f - ((height + 1) * tileSize) - cY, tileSize, tileSize}, {0.5f, 0.25f, 0.0f, 1.0f});
+        height++;
+      }
     }
   }
 }
