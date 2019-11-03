@@ -100,9 +100,11 @@ void Level::modCam(float &cX, float &cY, float pX, float pY) {
     if (wPH + terrain[wPX * depth + i] > wPY) break;
     wPH += terrain[wPX * depth + i];
   }
-  float camTarget = 90.0f - wPH * tileSize;
-  cY += (camTarget - cY) / 8.0f;
-  if (cY > 0.0f) cY = 0.0f;
+  if (wPY - wPH < 8) {
+    float camTarget = 90.0f - wPH * tileSize;
+    cY += (camTarget - cY) / 8.0f;
+    if (cY > 0.0f) cY = 0.0f;
+  }
 }
 
 float Level::getBelowHeight(float x, float y) {

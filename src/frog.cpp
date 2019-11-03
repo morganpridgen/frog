@@ -35,7 +35,7 @@ void Frog::update(TXL_Controller *ctrl, Level &lvl) {
 
 void Frog::motionCalc() {
   if (!info.grounded) {
-    info.yV += 1.0f;
+    if (info.yV < 16.0f) info.yV += 1.0f;
     if (info.xV > 0.0f) info.xV -= 0.5f;
     if (info.xV < 0.0f) info.xV += 0.5f;
     if (fabs(info.xV) < 1.0f) info.xV = 0.0f;
