@@ -57,13 +57,13 @@ void Level::render(float cX, float cY) {
       }
       for (int k = 0; k < terrain[i * depth + j]; k++) {
         groundTex.setClip(32 * (terrain[i * depth + j] - k == 1), 32 * (terrain[i * depth + j] - k == 1) + 32, 0, 32);
-        groundTex.render(i * tileSize + 16 - cX, 360.0f - ((k - height + 1) * tileSize) + 16 - cY);
+        groundTex.render(i * tileSize + 16 - cX, 360.0f - ((k + height + 1) * tileSize) + 16 - cY);
       }
       height += terrain[i * depth + j];
     }
     if (depth % 2 == 0) {
       groundTex.setClip(0, 32, 0, 32);
-      while (height * tileSize - cX < 360) {
+      while ((height * tileSize) + cY < 360) { // height * tileSize - cY < 360
         groundTex.render(i * tileSize + 16 - cX, 360.0f - ((height + 1) * tileSize) + 16 - cY);
         height++;
       }
