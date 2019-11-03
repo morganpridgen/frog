@@ -26,7 +26,7 @@ class Frog {
     void render(float, float);
     void end();
     
-    void modCam(float&, float&);
+    void modCam(float&, float&, Level&);
 };
 
 #endif

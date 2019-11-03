@@ -14,8 +14,7 @@ GameState *PlayState::update(TXL_Controller *ctrls[4]) {
   frog.update(ctrls[0], lvl);
   lvl.update();
   
-  frog.modCam(cX, cY);
-  lvl.modCam(cX, cY);
+  frog.modCam(cX, cY, lvl);
   return nullptr;
 }
 

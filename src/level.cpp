@@ -7,6 +7,8 @@
 
 #define tileSize 32.0f
 
+TXL_Texture groundTex;
+
 int nextInt(TXL_File *f) {
   int out = 0;
   char tmp = 0;
@@ -35,6 +37,7 @@ bool Level::init(const char *name, Frog &frog) {
   terrain = new int[length * depth];
   for (int i = 0; i < length * depth; i++) terrain[i] = nextInt(&f);
   f.close();
+  if (!groundTex.load(TXL_DataPath("ground.png"), 64, 32)) return 0;
   return 1;
 }
 
@@ -52,17 +55,16 @@ void Level::render(float cX, float cY) {
         height += terrain[i * depth + j];
         continue;
       }
-      //TXL_RenderQuad({i * tileSize - cX, 360.0f - ((terrain[i * depth + j] - height) * tileSize) - cY, tileSize, (terrain[i * depth + j] - height) * tileSize}, {0.0f, 1.0f, 0.0f, 1.0f});
       for (int k = 0; k < terrain[i * depth + j]; k++) {
-        if (terrain[i * depth + j] - k == 1) TXL_RenderQuad({i * tileSize - cX, 360.0f - ((k - height + 1) * tileSize) - cY, tileSize, tileSize}, {0.0f, 1.0f, 0.0f, 1.0f});
-        else TXL_RenderQuad({i * tileSize - cX, 360.0f - ((k - height + 1) * tileSize) - cY, tileSize, tileSize}, {0.5f, 0.25f, 0.0f, 1.0f});
+        groundTex.setClip(32 * (terrain[i * depth + j] - k == 1), 32 * (terrain[i * depth + j] - k == 1) + 32, 0, 32);
+        groundTex.render(i * tileSize + 16 - cX, 360.0f - ((k - height + 1) * tileSize) + 16 - cY);
       }
       height += terrain[i * depth + j];
     }
     if (depth % 2 == 0) {
-      //TXL_RenderQuad({i * tileSize - cX, 0, tileSize, 360.0f - height * tileSize - cY}, {0.0f, 1.0f, 0.0f, 1.0f});
+      groundTex.setClip(0, 32, 0, 32);
       while (height * tileSize - cX < 360) {
-        TXL_RenderQuad({i * tileSize - cX, 360.0f - ((height + 1) * tileSize) - cY, tileSize, tileSize}, {0.5f, 0.25f, 0.0f, 1.0f});
+        groundTex.render(i * tileSize + 16 - cX, 360.0f - ((height + 1) * tileSize) + 16 - cY);
         height++;
       }
     }
@@ -70,18 +72,35 @@ void Level::render(float cX, float cY) {
 }
 
 void Level::end() {
+  groundTex.free();
   delete [] terrain;
   terrain = nullptr;
 }
 
-void Level::modCam(float &cX, float &cY) {
+void Level::modCam(float &cX, float &cY, float pX, float pY) {
+  int wPX = pX / tileSize;
+  int wPY = (360.0f - pY) / tileSize + 1;
   if (cX < 0.0f) cX = 0.0f;
   if (cX > (length - 20) * tileSize) cX = (length - 20) * tileSize;
   
-  int scanStart = cX / tileSize;
+  /*int scanStart = cX / tileSize;
   int wCamTarget = 0;
-  for (int i = 0; i < 20; i++) wCamTarget += terrain[(i + scanStart) * depth];
+  for (int i = 0; i < 20; i++) {
+    int colCamTarget = 0;
+    for (int j = 0; j < depth; j++) {
+      colCamTarget += terrain[(i + scanStart) * depth + j];
+      if (colCamTarget < wPY && colCamTarget + terrain[(i + scanStart) * depth + j] > wPY) break;
+    }
+    wCamTarget += colCamTarget;
+  }
   float camTarget = 90.0f - (wCamTarget / 20) * tileSize;
+  cY += (camTarget - cY) / 8.0f;*/
+  int wPH = 0;
+  for (int i = 0; i < depth; i++) {
+    if (wPH + terrain[wPX * depth + i] > wPY) break;
+    wPH += terrain[wPX * depth + i];
+  }
+  float camTarget = 90.0f - wPH * tileSize;
   cY += (camTarget - cY) / 8.0f;
   if (cY > 0.0f) cY = 0.0f;
 }

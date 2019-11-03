@@ -93,6 +93,7 @@ void Frog::end() {
   frogTex.free();
 }
 
-void Frog::modCam(float &cX, float &cY) {
+void Frog::modCam(float &cX, float &cY, Level &lvl) {
   cX += (info.x - cX - 320.0f) / 8.0f;
+  lvl.modCam(cX, cY, info.x, info.y);
 }
