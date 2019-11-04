@@ -90,22 +90,10 @@ void Level::end() {
 
 void Level::modCam(float &cX, float &cY, float pX, float pY) {
   int wPX = pX / tileSize;
-  int wPY = (360.0f - pY) / tileSize + 1;
+  int wPY = (360.0f - pY) / tileSize;
   if (cX < 0.0f) cX = 0.0f;
   if (cX > (length - 20) * tileSize) cX = (length - 20) * tileSize;
   
-  /*int scanStart = cX / tileSize;
-  int wCamTarget = 0;
-  for (int i = 0; i < 20; i++) {
-    int colCamTarget = 0;
-    for (int j = 0; j < depth; j++) {
-      colCamTarget += terrain[(i + scanStart) * depth + j];
-      if (colCamTarget < wPY && colCamTarget + terrain[(i + scanStart) * depth + j] > wPY) break;
-    }
-    wCamTarget += colCamTarget;
-  }
-  float camTarget = 90.0f - (wCamTarget / 20) * tileSize;
-  cY += (camTarget - cY) / 8.0f;*/
   int wPH = 0;
   for (int i = 0; i < depth; i++) {
     if (wPH + terrain[wPX * depth + i] > wPY) break;
