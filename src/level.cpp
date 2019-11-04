@@ -45,7 +45,6 @@ bool Level::init(const char *name, Frog &frog) {
   for (int i = 0; i < flyCount; i++) {
     int fX = nextInt(&f);
     int fY = nextInt(&f);
-    printf("Fly %i is at %.0f %.0f\n", i, fX * tileSize + tileSize / 2.0f, 360.0f - (fY * tileSize + tileSize / 2.0f));
     addFly({fX * tileSize + tileSize / 2.0f, 360.0f - (fY * tileSize + tileSize / 2.0f)});
   }
   

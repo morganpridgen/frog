@@ -7,6 +7,7 @@
 bool PlayState::init() {
   if (!frog.init()) return 0;
   if (!lvl.init("lvl1", frog)) return 0;
+  if (!initFlies()) return 0;
   cX = 0.0f, cY = 0.0f;
   return 1;
 }
