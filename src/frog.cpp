@@ -23,6 +23,10 @@ void Frog::update(TXL_Controller *ctrl, Level &lvl) {
     info.yV = (d * sin(r)) / 8.0f;
     ctrl->rumble(d / 512.0f + 0.25f, 250);
     dir = info.xV < 0;
+    TXL_Square hop = {1760, 1.0f, 16.0f, 0};
+    TXL_PlaySound(hop);
+    hop = {3520, 0.5f, 4.0f, 1};
+    TXL_PlaySound(hop);
   }
   
   motionCalc();
@@ -35,7 +39,13 @@ void Frog::update(TXL_Controller *ctrl, Level &lvl) {
 
 void Frog::motionCalc() {
   if (!info.grounded) {
-    if (info.yV < 16.0f) info.yV += 1.0f;
+    //if (info.yV < 16.0f) info.yV += 1.0f;
+    info.yV += 1.0f;
+    if (info.xV * info.xV + info.yV * info.yV > 576.0f) {
+      float r = atan2(info.yV, info.xV);
+      info.xV = 24.0f * cos(r);
+      info.yV = 24.0f * sin(r);
+    }
     if (info.xV > 0.0f) info.xV -= 0.5f;
     if (info.xV < 0.0f) info.xV += 0.5f;
     if (fabs(info.xV) < 1.0f) info.xV = 0.0f;
@@ -44,6 +54,7 @@ void Frog::motionCalc() {
 
 void Frog::colCalc(Level &lvl) {
   if (lvl.inFloor(info.x, info.y)) {
+    bool floor = 0;
     for (int i = 0; i < 128; i++) {
       if (!lvl.inFloor(info.x, info.y - i)) { // floor check
         info.y -= i + 1;
@@ -54,6 +65,7 @@ void Frog::colCalc(Level &lvl) {
           info.yV = 0.0f;
           info.grounded = 1;
         }
+        floor = 1;
         break;
       }
       if (!lvl.inFloor(info.x - i, info.y)) { // left wall check
@@ -73,6 +85,12 @@ void Frog::colCalc(Level &lvl) {
         break;
       }
     }
+    if (floor) {
+      TXL_Triangle land = {220, 0.5f, 2.0f};
+      TXL_PlaySound(land);
+    }
+    TXL_Noise bump = {1, 4.0f, 0, 12, 0};
+    TXL_PlaySound(bump);
   }
 }
 
