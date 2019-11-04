@@ -4,6 +4,7 @@
 #include <cmath>
 #include <TEXEL/texel.h>
 #include "frog.h"
+#include "fly.h"
 
 #define tileSize 32.0f
 
@@ -37,6 +38,17 @@ bool Level::init(const char *name, Frog &frog) {
   terrain = new int[length * depth];
   for (int i = 0; i < length * depth; i++) terrain[i] = nextInt(&f);
   f.close();
+  sprintf(path, "levels/%s/flies.txt", name);
+  if (!f.init(TXL_DataPath(path), 'r')) return 0;
+  int flyCount = nextInt(&f);
+  setFlyCount(flyCount);
+  for (int i = 0; i < flyCount; i++) {
+    int fX = nextInt(&f);
+    int fY = nextInt(&f);
+    printf("Fly %i is at %.0f %.0f\n", i, fX * tileSize + tileSize / 2.0f, 360.0f - (fY * tileSize + tileSize / 2.0f));
+    addFly({fX * tileSize + tileSize / 2.0f, 360.0f - (fY * tileSize + tileSize / 2.0f)});
+  }
+  
   if (!groundTex.load(TXL_DataPath("ground.png"), 64, 32)) return 0;
   return 1;
 }
