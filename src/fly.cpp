@@ -27,6 +27,29 @@ void addFly(Fly newFly) {
   }
 }
 
+int flyAt(float x, float y) {
+  for (int i = 0; i < numFlies; i++) {
+    if (flies[i].x < 0.0f) continue;
+    float dX = flies[i].x - x, dY = flies[i].y - y;
+    if (dX * dX + dY * dY < 144) return i;
+  }
+  return -1;
+}
+
+void removeFly(int f) {
+  flies[f].x = -1.0f;
+}
+
+int liveFlies() {
+  int live = 0;
+  for (int i = 0; i < numFlies; i++) live += flies[i].x >= 0.0f;
+  return live;
+}
+
+int totalFlies() {
+  return numFlies;
+}
+
 void updateFlies() {
   for (int i = 0; i < numFlies; i++) {
     if (flies[i].x < 0.0f) continue;

@@ -14,10 +14,13 @@ struct FrogInfo {
 
 class Frog {
   private:
-    TXL_Texture frogTex;
+    TXL_Texture frogTex, toungeTex;
     bool dir;
     FrogInfo info;
     float mX, mY, lCX, lCY;
+    float tR;
+    int tSegs, tTSegs;
+    bool tState;
     void motionCalc();
     void colCalc(Level&);
   public:
