@@ -20,7 +20,7 @@ void Frog::update(TXL_Controller *ctrl, Level &lvl) {
   
   if (ctrl->buttonClick(CtrlM) && info.grounded && !tSegs) {
     float wMX = mX + lCX, wMY = mY + lCY;
-    int tFly = flyAt(wMX, wMY);
+    int tFly = flyAt(wMX, wMY, 16.0f);
     if (tFly != -1) { // do tounge
       tR = atan2(wMY - info.y, wMX - info.x);
       tState = 1;
@@ -47,7 +47,7 @@ void Frog::update(TXL_Controller *ctrl, Level &lvl) {
     tSegs++;
     if (lvl.inFloor(info.x + 16.0f * tSegs * cos(tR), info.y + 16.0f * tSegs * sin(tR))) tState = 0;
     if (tTSegs == tSegs) tState = 0;
-    int tFly = flyAt(info.x + 16.0f * tSegs * cos(tR), info.y + 16.0f * tSegs * sin(tR));
+    int tFly = flyAt(info.x + 16.0f * tSegs * cos(tR), info.y + 16.0f * tSegs * sin(tR), 24.0f);
     if (tFly != -1) {
       removeFly(tFly);
       tState = 0;

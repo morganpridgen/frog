@@ -8,7 +8,7 @@ struct Fly {
 bool initFlies();
 void setFlyCount(int);
 void addFly(Fly);
-int flyAt(float, float);
+int flyAt(float, float, float);
 void removeFly(int);
 int liveFlies();
 int totalFlies();

@@ -27,11 +27,11 @@ void addFly(Fly newFly) {
   }
 }
 
-int flyAt(float x, float y) {
+int flyAt(float x, float y, float r) {
   for (int i = 0; i < numFlies; i++) {
     if (flies[i].x < 0.0f) continue;
     float dX = flies[i].x - x, dY = flies[i].y - y;
-    if (dX * dX + dY * dY < 144) return i;
+    if (dX * dX + dY * dY < r * r) return i;
   }
   return -1;
 }
