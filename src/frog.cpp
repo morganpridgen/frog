@@ -3,7 +3,7 @@
 #include "fly.h"
 
 bool Frog::init() {
-  if (!frogTex.load(TXL_DataPath("frog.png"), 32, 16)) return 0;
+  if (!frogTex.load(TXL_DataPath("frog.png"), 48, 16)) return 0;
   if (!toungeTex.load(TXL_DataPath("tounge.png"), 32, 16)) return 0;
   dir = 0;
   info.x = 320.0f, info.y = 180.0f, info.xV = 0.0f, info.yV = 0.0f;
@@ -126,12 +126,13 @@ void Frog::render(float cX, float cY) {
     toungeTex.setClip(0, 16, 0, 16);
     for (int i = 0; i < tSegs; i++) {
       if (tSegs - i == 1) toungeTex.setClip(16, 32, 0, 16);
-      toungeTex.render(info.x + (16.0f * (float(i) + 0.5f) * cos(tR)) + (dir ? -3 : 3) - cX, info.y + (16.0f * (float(i) + 0.5f) * sin(tR)) - 10 - cY, 1.0f, 1.0f, tR * (180.0f / 3.14f));
+      toungeTex.render(info.x + (16.0f * (float(i) + 0.5f) * cos(tR)) + (dir ? -2 : 2) - cX, info.y + (16.0f * (float(i) + 0.5f) * sin(tR)) - 10 - cY, 1.0625f, 1.0f, tR * (180.0f / 3.14f));
     }
   }
   
   int xOff = 0, yOff = 0;
   if (!info.grounded) xOff = 16;
+  if (tSegs) xOff = 32;
   if (dir) frogTex.setClip(xOff + 16, xOff, yOff, yOff + 16);
   else frogTex.setClip(xOff, xOff + 16, yOff, yOff + 16);
   frogTex.render(info.x - cX, info.y - 7 - cY);
