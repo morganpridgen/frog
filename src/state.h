@@ -25,10 +25,22 @@ class PlayState : public GameState {
     virtual void end();
 };
 
+class LevelSelectState : public GameState {
+  private:
+    char **levelList;
+    int selectedLevel, lvlCount;
+    float lJX;
+  public:
+    virtual bool init();
+    virtual GameState *update(TXL_Controller*[4]);
+    virtual void render();
+    virtual void end();
+};
+
 class InitState : public GameState {
   public:
     virtual bool init() {return 1;}
-    virtual GameState *update(TXL_Controller *ctrls[4]) {return new PlayState;}
+    virtual GameState *update(TXL_Controller *ctrls[4]) {return new LevelSelectState;}
     virtual void render() {}
     virtual void end() {}
 };

@@ -30,6 +30,8 @@ class Frog {
     void render(float, float);
     void end();
     
+    void getPos(float &x, float &y) {x = info.x, y = info.y;}
+    void setPos(float x, float y) {info.x = x, info.y = y;}
     void modCam(float&, float&, Level&);
 };
 

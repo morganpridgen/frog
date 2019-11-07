@@ -30,15 +30,16 @@ int nextInt(TXL_File *f) {
 
 bool Level::init(const char *name, Frog &frog) {
   TXL_File f;
-  char path[256];
-  sprintf(path, "levels/%s/terrain.txt", name);
+  char path[256], root[256];
+  sprintf(root, "levels/%s", name);
+  sprintf(path, "%s/terrain.txt", root);
   if (!f.init(TXL_DataPath(path), 'r')) return 0;
   length = nextInt(&f);
   depth = nextInt(&f);
   terrain = new int[length * depth];
   for (int i = 0; i < length * depth; i++) terrain[i] = nextInt(&f);
   f.close();
-  sprintf(path, "levels/%s/flies.txt", name);
+  sprintf(path, "%s/flies.txt", root);
   if (!f.init(TXL_DataPath(path), 'r')) return 0;
   int flyCount = nextInt(&f);
   setFlyCount(flyCount);
@@ -47,6 +48,12 @@ bool Level::init(const char *name, Frog &frog) {
     int fY = nextInt(&f);
     addFly({fX * tileSize + tileSize / 2.0f, 360.0f - (fY * tileSize + tileSize / 2.0f)});
   }
+  sprintf(path, "%s/frog.txt", root);
+  if (!f.init(TXL_DataPath(path), 'r')) return 0;
+  int fX, fY;
+  fX = nextInt(&f);
+  fY = nextInt(&f);
+  frog.setPos(fX * tileSize + tileSize / 2.0f, 360.0f - (fY * tileSize));
   
   if (!groundTex.load(TXL_DataPath("ground.png"), 64, 32)) return 0;
   return 1;
@@ -104,34 +111,6 @@ void Level::modCam(float &cX, float &cY, float pX, float pY) {
     cY += (camTarget - cY) / 8.0f;
     if (cY > 0.0f) cY = 0.0f;
   }
-}
-
-float Level::getBelowHeight(float x, float y) {
-  int t = x / tileSize;
-  int h = 0;
-  bool isSolid = 1;
-  for (int i = 0; i < depth; i++) {
-    if (isSolid) {
-      if (terrain[t * depth + i] > y) break;
-      h = terrain[t * depth + i];
-    }
-    isSolid = !isSolid;
-  }
-  return 360.0f - (h * tileSize);
-}
-
-float Level::getAboveHeight(float x, float y) {
-  int t = x / tileSize;
-  int h = 0;
-  bool isSolid = 1;
-  for (int i = 0; i < depth; i++) {
-    if (isSolid) {
-      h = terrain[t * depth + i];
-      if (h > y) break;
-    }
-    isSolid = !isSolid;
-  }
-  return 360.0f - (h * tileSize);
 }
 
 bool Level::inFloor(float x, float y) {

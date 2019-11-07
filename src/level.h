@@ -16,8 +16,6 @@ class Level {
     void end();
     
     void modCam(float&, float&, float, float);
-    float getBelowHeight(float, float);
-    float getAboveHeight(float, float);
     bool inFloor(float, float);
 };
 
