@@ -2,6 +2,9 @@
 #include <cmath>
 #include "fly.h"
 
+#define tXOff (dir ? -2.0f : 2.0f)
+#define tYOff (-10.0f)
+
 bool Frog::init() {
   if (!frogTex.load(TXL_DataPath("frog.png"), 48, 16)) return 0;
   if (!toungeTex.load(TXL_DataPath("tounge.png"), 32, 16)) return 0;
@@ -22,10 +25,10 @@ void Frog::update(TXL_Controller *ctrl, Level &lvl) {
     float wMX = mX + lCX, wMY = mY + lCY;
     int tFly = flyAt(wMX, wMY, 16.0f);
     if (tFly != -1) { // do tounge
-      tR = atan2(wMY - info.y, wMX - info.x);
+      dir = wMX < info.x;
+      tR = atan2(wMY - info.y - tYOff, wMX - info.x - tXOff);
       tState = 1;
       tTSegs = fmin(sqrt((wMX - info.x) * (wMX - info.x) + (wMY - info.y) * (wMY - info.y)) / 16.0f, 16.0f);
-      dir = wMX < info.x;
       ctrl->rumble(0.75f, 250);
     } else { // do jump
       info.grounded = 0;
@@ -134,7 +137,7 @@ void Frog::render(float cX, float cY) {
     toungeTex.setClip(0, 16, 0, 16);
     for (int i = 0; i < tSegs; i++) {
       if (tSegs - i == 1) toungeTex.setClip(16, 32, 0, 16);
-      toungeTex.render(info.x + (16.0f * (float(i) + 0.5f) * cos(tR)) + (dir ? -2 : 2) - cX, info.y + (16.0f * (float(i) + 0.5f) * sin(tR)) - 10 - cY, 1.0625f, 1.0f, tR * (180.0f / 3.14f));
+      toungeTex.render(info.x + (16.0f * (float(i) + 0.5f) * cos(tR)) + tXOff - cX, info.y + (16.0f * (float(i) + 0.5f) * sin(tR)) + tYOff - cY, 1.0625f, 1.0f, tR * (180.0f / 3.14f));
     }
   }
   
