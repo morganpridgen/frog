@@ -26,6 +26,7 @@ void Frog::update(TXL_Controller *ctrl, Level &lvl) {
       tState = 1;
       tTSegs = fmin(sqrt((wMX - info.x) * (wMX - info.x) + (wMY - info.y) * (wMY - info.y)) / 16.0f, 16.0f);
       dir = wMX < info.x;
+      ctrl->rumble(0.75f, 250);
     } else { // do jump
       info.grounded = 0;
       float d, r;
@@ -52,7 +53,10 @@ void Frog::update(TXL_Controller *ctrl, Level &lvl) {
       removeFly(tFly);
       tState = 0;
     }
-  } else if (tSegs > 0) tSegs--;
+  } else if (tSegs > 0) {
+    tSegs--;
+    if (tSegs == 0) ctrl->rumble(0.375f, 250);
+  }
   
   motionCalc();
   for (int i = 0; i < 4; i++) {
@@ -78,10 +82,10 @@ void Frog::motionCalc() {
 }
 
 void Frog::colCalc(Level &lvl) {
-  if (lvl.inFloor(info.x, info.y)) {
+  if (isInFloor(0.0f, 0.0f, lvl)) {
     bool floor = 0;
     for (int i = 0; i < 128; i++) {
-      if (!lvl.inFloor(info.x, info.y - i)) { // floor check
+      if (!isInFloor(0.0f, 0.0f - i, lvl)) { // floor check
         info.y -= i + 1;
         info.yV = round(info.yV * -0.5f);
         info.xV = round(info.xV * 0.5f);
@@ -93,17 +97,17 @@ void Frog::colCalc(Level &lvl) {
         floor = 1;
         break;
       }
-      if (!lvl.inFloor(info.x - i, info.y)) { // left wall check
+      if (!isInFloor(0.0f - i, 0.0f, lvl)) { // left wall check
         info.x -= i + 1;
         info.xV = round(info.xV * -0.75f);
         break;
       }
-      if (!lvl.inFloor(info.x + i, info.y)) { // right wall check
+      if (!isInFloor(0.0f + i, 0.0f, lvl)) { // right wall check
         info.x += i + 1;
         info.xV = round(info.xV * -0.75f);
         break;
       }
-      if (!lvl.inFloor(info.x, info.y + i)) { // ceiling check
+      if (!isInFloor(0.0f, 0.0f + i, lvl)) { // ceiling check
         info.y += i + 1;
         info.yV = round(info.yV * -0.5f);
         info.xV = round(info.xV * 0.5f);
@@ -117,6 +121,10 @@ void Frog::colCalc(Level &lvl) {
     TXL_Noise bump = {1, 4.0f, 0, 12, 0};
     TXL_PlaySound(bump);
   }
+}
+
+bool Frog::isInFloor(float xOff, float yOff, Level &lvl) {
+  return lvl.inFloor(info.x - 8.0f + xOff, info.y + yOff) || lvl.inFloor(info.x + 8.0f + xOff, info.y + yOff);
 }
 
 void Frog::render(float cX, float cY) {

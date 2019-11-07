@@ -23,6 +23,7 @@ class Frog {
     bool tState;
     void motionCalc();
     void colCalc(Level&);
+    bool isInFloor(float, float, Level&);
   public:
     bool init();
     void update(TXL_Controller*, Level&);

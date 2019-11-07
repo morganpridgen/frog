@@ -17,6 +17,7 @@ class PlayState : public GameState {
     Frog frog;
     Level lvl;
     float cX, cY;
+    int endTimer;
   public:
     virtual bool init();
     virtual GameState *update(TXL_Controller*[4]);
