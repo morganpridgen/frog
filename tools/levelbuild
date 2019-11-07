@@ -52,7 +52,7 @@ def genTerrain(surf, top):
     while len(out[i]) > d: out[i].pop(-1)
     for j in range(d):
       if out[i][d - j - 1] != 0:
-        if j % 2 == top: out[i][d - j - 1] = 0
+        if j % 2 == 1: out[i][d - j - 1] = 0
         break;
   return out
 
