@@ -4,6 +4,7 @@
 
 #define tXOff (dir ? -2.0f : 2.0f)
 #define tYOff (-10.0f)
+#define colXOff (8.0f)
 
 bool Frog::init() {
   if (!frogTex.load(TXL_DataPath("frog.png"), 48, 16)) return 0;
@@ -127,7 +128,7 @@ void Frog::colCalc(Level &lvl) {
 }
 
 bool Frog::isInFloor(float xOff, float yOff, Level &lvl) {
-  return lvl.inFloor(info.x - 8.0f + xOff, info.y + yOff) || lvl.inFloor(info.x + 8.0f + xOff, info.y + yOff);
+  return lvl.inFloor(info.x - colXOff + xOff, info.y + yOff) || lvl.inFloor(info.x + colXOff + xOff, info.y + yOff);
 }
 
 void Frog::render(float cX, float cY) {
