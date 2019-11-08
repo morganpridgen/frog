@@ -64,6 +64,15 @@ void Level::update() {
 }
 
 void Level::render(float cX, float cY) {
+  groundTex.setColorMod(0.75f, 0.75f, 0.75f);
+  for (int i = cX / tileSize; i < (cX + 1280.0f) / tileSize + 1; i++) {
+    for (int j = 0; j < 6 + (i / 4) % 2; j++) {
+      groundTex.setClip(32 * (j == 5 + (i / 4) % 2), 32 * (j == 5 + (i / 4) % 2) + 32, 0, 32);
+      groundTex.render(i * (tileSize / 2.0f) - cX / 2.0f, 360.0f - (j * tileSize / 2.0f) - cY / 2.0f, 0.5f, 0.5f);
+    }
+  }
+  
+  groundTex.setColorMod(1.0f, 1.0f, 1.0f);
   for (int i = cX / tileSize; i < (cX + 640.0f) / tileSize; i++) {
     bool terrainRender = 1;
     int height = 0;
