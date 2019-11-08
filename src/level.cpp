@@ -55,7 +55,7 @@ bool Level::init(const char *name, Frog &frog) {
   fY = nextInt(&f);
   frog.setPos(fX * tileSize + tileSize / 2.0f, 360.0f - (fY * tileSize));
   
-  if (!groundTex.load(TXL_DataPath("ground.png"), 64, 32)) return 0;
+  if (!groundTex.load(TXL_DataPath("ground.png"), 96, 32)) return 0;
   return 1;
 }
 
@@ -82,8 +82,16 @@ void Level::render(float cX, float cY) {
         height += terrain[i * depth + j];
         continue;
       }
+      groundTex.setClip(0, 32, 0, 32);
       for (int k = 0; k < terrain[i * depth + j]; k++) {
-        groundTex.setClip(32 * (terrain[i * depth + j] - k == 1), 32 * (terrain[i * depth + j] - k == 1) + 32, 0, 32);
+        if (terrain[i * depth + j] - k == 1) {
+          if (((i + height + k) & 0b1001) == 0) {
+            int fId = ((i + height + k) >> 1) & 0b11;
+            groundTex.setClip(64 + 8 * fId, 72 + 8 * fId, 0, 16);
+            groundTex.render(i * tileSize + 16 - cX, 360.0f - ((k + height + 1) * tileSize) - 8 - cY);
+          }
+          groundTex.setClip(32, 64, 0, 32);
+        }
         groundTex.render(i * tileSize + 16 - cX, 360.0f - ((k + height + 1) * tileSize) + 16 - cY);
       }
       height += terrain[i * depth + j];
