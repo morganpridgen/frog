@@ -10,13 +10,17 @@ TXL_Display disp;
 TXL_Controller *ctrls[4];
 GameState *state;
 bool loop = 1;
+bool stateChange = 0;
 
 int main(int argc, char **argv) {
   if (init()) {
     while (loop) {
       loop = TXL_Events(&disp);
       
-      update();
+      do {
+        stateChange = 0;
+        update();
+      } while (stateChange);
       render();
     }
     end();
@@ -55,6 +59,7 @@ void update() {
     delete state;
     state = newState;
     if (!state->init()) loop = 0;
+    stateChange = 1;
   }
 }
 

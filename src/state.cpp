@@ -10,7 +10,9 @@ bool PlayState::init() {
   if (!frog.init()) return 0;
   if (!lvl.init(level, frog)) return 0;
   if (!initFlies()) return 0;
-  cX = 0.0f, cY = 0.0f;
+  frog.getPos(cX, cY);
+  cX -= 320.0f;
+  cY -= 180.0f;
   endTimer = 0;
   return 1;
 }
@@ -30,10 +32,10 @@ GameState *PlayState::update(TXL_Controller *ctrls[4]) {
 
 void PlayState::render() {
   for (int i = 0; i < 45; i++) {
-    TXL_RenderQuad({0.0f, 8.0f * i, 640.0f, 8.0f}, {0.0f, (90 - i) / 90.0f, (90 - i) / 90.0f, 1.0f});
+    TXL_RenderQuad({0.0f, 8.0f * i, 640.0f, 8.0f}, {fmin(-cY / 1280.0f, 0.5f), (90 - i) / 90.0f, (90 - i) / 90.0f, 1.0f});
   }
   for (int i = cX / 256.0f; i < (cX + 2560.0f) / 256.0f + 2; i++) {
-    for (int j = 0; j < (270.0f - cY) / 128.0f; j++) {
+    for (int j = 0; j < (270.0f - cY) / 128.0f + 1; j++) {
       TXL_RenderQuad(i * 64.0f + (float(j % 2) * 32.0f) - (float(cloudScroll) / 8.0f) - cX / 4.0f, j * -32.0f + 90.0f - cY / 4.0f, 16, 8, {1.0f, 1.0f, 1.0f, 0.5f});
     }
   }
