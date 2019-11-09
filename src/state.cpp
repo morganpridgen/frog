@@ -24,22 +24,11 @@ GameState *PlayState::update(TXL_Controller *ctrls[4]) {
   if (!liveFlies()) endTimer++;
   if (endTimer >= 150) return new LevelSelectState;
   
-  cloudScroll = (cloudScroll + 1) % 512;
-  
   frog.modCam(cX, cY, lvl);
   return nullptr;
 }
 
 void PlayState::render() {
-  for (int i = 0; i < 45; i++) {
-    TXL_RenderQuad({0.0f, 8.0f * i, 640.0f, 8.0f}, {fmin(-cY / 1280.0f, 0.5f), (90 - i) / 90.0f, (90 - i) / 90.0f, 1.0f});
-  }
-  for (int i = cX / 256.0f; i < (cX + 2560.0f) / 256.0f + 2; i++) {
-    for (int j = 0; j < (270.0f - cY) / 128.0f + 1; j++) {
-      TXL_RenderQuad(i * 64.0f + (float(j % 2) * 32.0f) - (float(cloudScroll) / 8.0f) - cX / 4.0f, j * -32.0f + 90.0f - cY / 4.0f, 16, 8, {1.0f, 1.0f, 1.0f, 0.5f});
-    }
-  }
-  
   lvl.render(cX, cY);
   renderFlies(cX, cY);
   frog.render(cX, cY);
@@ -84,6 +73,10 @@ bool LevelSelectState::init() {
     levelList[i] = new char[strlen(tmpLevels[i]) + 1];
     strcpy(levelList[i], tmpLevels[i]);
   }
+  
+  if (!frogTex.load(TXL_DataPath("frog.png"), 64, 16)) return 0;
+  frogTex.setClip(0, 16, 0, 16);
+  if (!groundTex.load(TXL_DataPath("terrain/ground.png"), 96, 32)) return 0;
   return 1;
 }
 
@@ -105,6 +98,13 @@ void LevelSelectState::render() {
   for (int i = 0; i < 45; i++) {
     TXL_RenderQuad({0.0f, 8.0f * i, 640.0f, 8.0f}, {0.0f, (90 - i) / 90.0f, (90 - i) / 90.0f, 1.0f});
   }
+  for (int i = 0; i < 20; i++) {
+    groundTex.setClip(0, 32, 0, 32);
+    groundTex.render(i * 32 + 16, 344);
+    groundTex.setClip(32, 64, 0, 32);
+    groundTex.render(i * 32 + 16, 312);
+  }
+  frogTex.render(48, 288);
   
   TXL_Texture *levelTex = TXL_RenderText(levelList[selectedLevel], 1.0f, 1.0f, 1.0f);
   levelTex->setColorMod(0.5f, 0.5f, 0.5f);
@@ -118,4 +118,6 @@ void LevelSelectState::end() {
   for (int i = 0; i < lvlCount; i++) delete levelList[i];
   delete levelList;
   levelList = nullptr;
+  frogTex.free();
+  groundTex.free();
 }

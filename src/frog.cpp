@@ -7,7 +7,7 @@
 #define colXOff (8.0f)
 
 bool Frog::init() {
-  if (!frogTex.load(TXL_DataPath("frog.png"), 48, 16)) return 0;
+  if (!frogTex.load(TXL_DataPath("frog.png"), 64, 16)) return 0;
   if (!toungeTex.load(TXL_DataPath("tounge.png"), 32, 16)) return 0;
   dir = 0;
   info.x = 320.0f, info.y = 180.0f, info.xV = 0.0f, info.yV = 0.0f;
@@ -31,6 +31,8 @@ void Frog::update(TXL_Controller *ctrl, Level &lvl) {
       tState = 1;
       tTSegs = fmin(sqrt((wMX - info.x) * (wMX - info.x) + (wMY - info.y) * (wMY - info.y)) / 16.0f, 16.0f);
       ctrl->rumble(0.75f, 250);
+      TXL_Noise lick = {1, 8.0f, 0, 4, 0};
+      TXL_PlaySound(lick);
     } else { // do jump
       info.grounded = 0;
       float d, r;
@@ -144,7 +146,7 @@ void Frog::render(float cX, float cY) {
   
   int xOff = 0, yOff = 0;
   if (!info.grounded) xOff = 16;
-  if (tSegs) xOff = 32;
+  if (tSegs) xOff = 32 + 16 * (sin(tR) > 0);
   if (dir) frogTex.setClip(xOff + 16, xOff, yOff, yOff + 16);
   else frogTex.setClip(xOff, xOff + 16, yOff, yOff + 16);
   frogTex.render(info.x - cX, info.y - 7 - cY);

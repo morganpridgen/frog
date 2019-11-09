@@ -17,7 +17,7 @@ class PlayState : public GameState {
     Frog frog;
     Level lvl;
     float cX, cY;
-    int endTimer, cloudScroll;
+    int endTimer;
   public:
     virtual bool init();
     virtual GameState *update(TXL_Controller*[4]);
@@ -30,6 +30,7 @@ class LevelSelectState : public GameState {
     char **levelList;
     int selectedLevel, lvlCount;
     float lJX;
+    TXL_Texture frogTex, groundTex;
   public:
     virtual bool init();
     virtual GameState *update(TXL_Controller*[4]);

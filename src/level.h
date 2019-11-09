@@ -9,6 +9,7 @@ class Level {
   private:
     int *terrain;
     int length, depth;
+    int cloudScroll;
   public:
     bool init(const char*, Frog&);
     void update();
