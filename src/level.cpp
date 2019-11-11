@@ -68,26 +68,30 @@ void Level::render(float cX, float cY) {
     for (int i = 0; i < 45; i++) {
       TXL_RenderQuad({0.0f, 8.0f * i, 640.0f, 8.0f}, {fmin(-cY / 1280.0f, 0.5f), (90 - i) / 90.0f, (90 - i) / 90.0f, 1.0f});
     }
+    
     for (int i = cX / 256.0f; i < (cX + 2560.0f) / 256.0f + 2; i++) {
       for (int j = 0; j < (270.0f - cY) / 128.0f + 1; j++) {
         TXL_RenderQuad(i * 64.0f + (float(j % 2) * 32.0f) - (float(cloudScroll) / 8.0f) - cX / 4.0f, j * -32.0f + 90.0f - cY / 4.0f, 16, 8, {1.0f, 1.0f, 1.0f, 0.5f});
       }
     }
+    
     groundTex.setColorMod(0.75f, 0.75f, 0.75f);
     for (int i = cX / tileSize; i < (cX + 1280.0f) / tileSize + 1; i++) {
-      for (int j = 0; j < 12 + (i / 4) % 2; j++) {
-        groundTex.setClip(32 * (j == 11 + (i / 4) % 2), 32 * (j == 11 + (i / 4) % 2) + 32, 0, 32);
+      for (int j = 0; j < 10 + (i / 4) % 2; j++) {
+        groundTex.setClip(32 * (j == 9 + (i / 4) % 2), 32 * (j == 9 + (i / 4) % 2) + 32, 0, 32);
         groundTex.render(i * (tileSize / 2.0f) - cX / 2.0f, 360.0f - (j * tileSize / 2.0f) - cY / 2.0f, 0.5f, 0.5f);
       }
     }
   } else {
     groundTex.setClip(0, 32, 0, 32);
+    
     groundTex.setColorMod(0.25f, 0.25f, 0.25f);
     for (int i = cX / tileSize; i < (cX + 2560.0f) / tileSize + 1; i++) {
       for (int j = cY / tileSize; j < (1440.0f - cY) / tileSize + 1; j++) {
         groundTex.render(i * (tileSize / 4.0f) - cX / 4.0f, 360.0f - (j * tileSize / 4.0f) - cY / 4.0f, 0.25f, 0.25f);
       }
     }
+    
     groundTex.setColorMod(0.5f, 0.5f, 0.5f);
     for (int i = cX / tileSize; i < (cX + 1280.0f) / tileSize + 1; i++) {
       for (int j = cY / tileSize; j < (720.0f - cY) / tileSize + 1; j++) {

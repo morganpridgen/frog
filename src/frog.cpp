@@ -9,6 +9,7 @@
 bool Frog::init() {
   if (!frogTex.load(TXL_DataPath("frog.png"), 64, 16)) return 0;
   if (!toungeTex.load(TXL_DataPath("tounge.png"), 32, 16)) return 0;
+  if (!arrowTex.load(TXL_DataPath("arrow.png"), 16, 16)) return 0;
   dir = 0;
   info.x = 320.0f, info.y = 180.0f, info.xV = 0.0f, info.yV = 0.0f;
   info.grounded = 0;
@@ -16,6 +17,8 @@ bool Frog::init() {
   tR = 0.0f;
   tSegs = 0, tTSegs = 0;
   tState = 0;
+  arrowTimer = 180, arrowFade = 0;
+  arrowAngle = 0;
   return 1;
 }
 
@@ -23,6 +26,7 @@ void Frog::update(TXL_Controller *ctrl, Level &lvl) {
   mX = ctrl->mouseX(), mY = ctrl->mouseY();
   
   if (ctrl->buttonClick(CtrlM) && info.grounded && !tSegs) {
+    arrowTimer = 180;
     float wMX = mX + lCX, wMY = mY + lCY;
     int tFly = flyAt(wMX, wMY, 16.0f);
     if (tFly != -1) { // do tounge
@@ -70,6 +74,13 @@ void Frog::update(TXL_Controller *ctrl, Level &lvl) {
     info.y += info.yV / 4.0f;
     colCalc(lvl);
   }
+  
+  if (arrowFade > 0 && arrowTimer > 0) arrowFade--;
+  if (arrowTimer == 0) {
+    arrowAngle = nearFlyAngle(info.x, info.y - 16);
+    if (arrowFade < 32 && info.grounded) arrowFade++;
+  }
+  if (arrowTimer > 0) arrowTimer--;
 }
 
 void Frog::motionCalc() {
@@ -149,7 +160,10 @@ void Frog::render(float cX, float cY) {
   if (tSegs) xOff = 32 + 16 * (sin(tR) > 0);
   if (dir) frogTex.setClip(xOff + 16, xOff, yOff, yOff + 16);
   else frogTex.setClip(xOff, xOff + 16, yOff, yOff + 16);
-  frogTex.render(info.x - cX, info.y - 7 - cY);
+  frogTex.render(info.x - cX, info.y - 6 - cY);
+  
+  arrowTex.setColorMod(float(arrowFade) / 32.0f);
+  arrowTex.render(info.x - cX, info.y - 22 - cY, arrowAngle * (180.0f / 3.14f));
   
   TXL_RenderQuad(mX, mY, 16, 2, {1.0f, 1.0f, 1.0f, 1.0f});
   TXL_RenderQuad(mX, mY, 2, 16, {1.0f, 1.0f, 1.0f, 1.0f});

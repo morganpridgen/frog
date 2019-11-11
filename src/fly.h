@@ -12,6 +12,7 @@ int flyAt(float, float, float);
 void removeFly(int);
 int liveFlies();
 int totalFlies();
+float nearFlyAngle(float, float);
 void updateFlies();
 void renderFlies(float, float);
 void endFlies();

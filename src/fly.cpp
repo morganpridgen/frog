@@ -1,5 +1,6 @@
 #include "fly.h"
 #include <cmath>
+#include <climits>
 #include <TEXEL/texel.h>
 
 Fly *flies = nullptr;
@@ -48,6 +49,18 @@ int liveFlies() {
 
 int totalFlies() {
   return numFlies;
+}
+
+float nearFlyAngle(float x, float y) {
+  int nearFly = -1;
+  float nearDist = FLT_MAX;
+  for (int i = 0; i < numFlies; i++) {
+    if (flies[i].x < 0.0f) continue;
+    float fDist = (flies[i].x - x) * (flies[i].x - x) + (flies[i].y - y) * (flies[i].y - y);
+    if (fDist < nearDist) nearFly = i, nearDist = fDist;
+  }
+  if (nearFly < 0) return 0;
+  return atan2(flies[nearFly].y - y, flies[nearFly].x - x);
 }
 
 void updateFlies() {
