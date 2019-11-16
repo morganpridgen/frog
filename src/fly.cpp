@@ -2,6 +2,9 @@
 #include <cmath>
 #include <climits>
 #include <TEXEL/texel.h>
+#if OS == windows
+  #include <float.h>
+#endif
 
 Fly *flies = nullptr;
 int numFlies = 0;

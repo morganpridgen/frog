@@ -1,0 +1,25 @@
+777 ICON "res/icon.ico"
+
+1 VERSIONINFO
+FILEVERSION     1,0,0,0
+PRODUCTVERSION  1,0,0,0
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "040904E4"
+    BEGIN
+      VALUE "CompanyName", "CurlyMorgan"
+      VALUE "FileDescription", "A game where you try to find flies"
+      VALUE "FileVersion", "1.0"
+      VALUE "InternalName", "frog"
+      VALUE "LegalCopyright", ""
+      VALUE "OriginalFilename", "frog.exe"
+      VALUE "ProductName", "Frog"
+      VALUE "ProductVersion", "1.0"
+    END
+  END
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x409, 1252
+  END
+END
