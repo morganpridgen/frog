@@ -165,6 +165,8 @@ void Frog::render(float cX, float cY) {
   arrowTex.setColorMod(float(arrowFade) / 32.0f);
   arrowTex.render(info.x - cX, info.y - 22 - cY, arrowAngle * (180.0f / 3.14f));
   
+  TXL_RenderQuad(mX, mY, 18, 4, {0.5f, 0.5f, 0.5f, 1.0f});
+  TXL_RenderQuad(mX, mY, 4, 18, {0.5f, 0.5f, 0.5f, 1.0f});
   TXL_RenderQuad(mX, mY, 16, 2, {1.0f, 1.0f, 1.0f, 1.0f});
   TXL_RenderQuad(mX, mY, 2, 16, {1.0f, 1.0f, 1.0f, 1.0f});
 }
