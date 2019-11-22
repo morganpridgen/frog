@@ -29,8 +29,9 @@ class LevelSelectState : public GameState {
   private:
     char **levelList;
     int selectedLevel, lvlCount;
-    float lJX;
-    TXL_Texture frogTex, groundTex;
+    float lJX, mX, mY, lBX, rBX;
+    bool mOnLB, mOnRB;
+    TXL_Texture frogTex, groundTex, arrowTex;
   public:
     virtual bool init();
     virtual GameState *update(TXL_Controller*[4]);
