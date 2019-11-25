@@ -24,6 +24,7 @@ int main(int argc, char **argv) {
       render();
     }
     end();
+    return 0;
   }
   return 1;
 }
