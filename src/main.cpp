@@ -36,7 +36,7 @@ bool init() {
   
   if (!disp.init("Frog")) return 0;
   for (int i = 0; i < 4; i++) {
-    ctrls[i] = new TXL_Controller;
+    ctrls[i] = new TXL_Gamepad;
     if (!ctrls[i]->init()) {
       delete ctrls[i];
       ctrls[i] = nullptr;

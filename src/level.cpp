@@ -36,8 +36,13 @@ bool Level::init(const char *name, Frog &frog) {
   if (!f.init(TXL_DataPath(path), 'r')) return 0;
   length = nextInt(&f);
   depth = nextInt(&f);
-  terrain = new int[length * depth];
-  for (int i = 0; i < length * depth; i++) terrain[i] = nextInt(&f);
+  solidTop = nextInt(&f);
+  terrain = new TileSpan[length * depth];
+  for (int i = 0; i < length * depth; i++) {
+    do f.read(&(terrain[i].type), sizeof(terrain[i].type));
+    while (terrain[i].type <= ' ');
+    terrain[i].len = nextInt(&f);
+  }
   f.close();
   sprintf(path, "%s/flies.txt", root);
   if (!f.init(TXL_DataPath(path), 'r')) return 0;
@@ -60,18 +65,19 @@ bool Level::init(const char *name, Frog &frog) {
 }
 
 void Level::update() {
-  cloudScroll = (cloudScroll + 1) % 512;
+  cloudScroll = (cloudScroll + 1) % 1024;
 }
 
 void Level::render(float cX, float cY) {
-  if (depth % 2) {
+  if (!solidTop) {
     for (int i = 0; i < 45; i++) {
-      TXL_RenderQuad({0.0f, 8.0f * i, 640.0f, 8.0f}, {fmin(-cY / 1280.0f, 0.5f), (90 - i) / 90.0f, (90 - i) / 90.0f, 1.0f});
+      TXL_RenderQuad({0.0f, 8.0f * i, 640.0f, 8.0f}, {fmin(-cY / 5120.0f, 0.5f), (90 - i) / 90.0f, (90 - i) / 90.0f, 1.0f});
     }
     
-    for (int i = cX / 256.0f; i < (cX + 2560.0f) / 256.0f + 2; i++) {
-      for (int j = 0; j < (270.0f - cY) / 128.0f + 1; j++) {
-        TXL_RenderQuad(i * 64.0f + (float(j % 2) * 32.0f) - (float(cloudScroll) / 8.0f) - cX / 4.0f, j * -32.0f + 90.0f - cY / 4.0f, 16, 8, {1.0f, 1.0f, 1.0f, 0.5f});
+    for (int i = cX / 512.0f; i < (cX + 640.0f * 8.0f) / 512.0f + 2; i++) {
+      for (int j = 0; j < (270.0f - cY) / 256.0f + 2; j++) {
+        if (j < 8 && i % 2)
+        TXL_RenderQuad(i * 64.0f + float(j % 2) * float(1 + (j < 8)) * 32.0f - (float(cloudScroll) / 8.0f) - cX / 8.0f, j * -32.0f + 90.0f - cY / 8.0f, 16, 8, {1.0f, 1.0f, 1.0f, 0.5f});
       }
     }
     
@@ -102,29 +108,33 @@ void Level::render(float cX, float cY) {
   
   groundTex.setColorMod(1.0f, 1.0f, 1.0f);
   for (int i = cX / tileSize; i < (cX + 640.0f) / tileSize; i++) {
-    bool terrainRender = 1;
     int height = 0;
     for (int j = 0; j < depth; j++) {
-      terrainRender = !terrainRender;
-      if (terrainRender) {
-        height += terrain[i * depth + j];
+      if (terrain[i * depth + j].type == 'E') {
+        height += terrain[i * depth + j].len;
         continue;
       }
-      groundTex.setClip(0, 32, 0, 32);
-      for (int k = 0; k < terrain[i * depth + j]; k++) {
-        if (terrain[i * depth + j] - k == 1) {
-          if (((i + height + k) & 0b1001) == 0) {
-            int fId = ((i + height + k) >> 1) & 0b11;
-            groundTex.setClip(64 + 8 * fId, 72 + 8 * fId, 0, 16);
-            groundTex.render(i * tileSize + 16 - cX, 360.0f - ((k + height + 1) * tileSize) - 8 - cY);
+      for (int k = 0; k < terrain[i * depth + j].len; k++) {
+        float tX = i * tileSize + 16 - cX, tY = 360.0f - ((k + height + 1) * tileSize) + 16 - cY;
+        switch (terrain[i * depth + j].type) {
+          case 'S': {
+            bool isTop = typeAt(i, height + k + 2) != 'S'; // k == terrain[i * depth + j].len - 1
+            groundTex.setClip(32 * isTop, 32 * isTop + 32, 0, 32);
+            groundTex.render(i * tileSize + 16 - cX, 360.0f - ((k + height + 1) * tileSize) + 16 - cY);
           }
-          groundTex.setClip(32, 64, 0, 32);
         }
-        groundTex.render(i * tileSize + 16 - cX, 360.0f - ((k + height + 1) * tileSize) + 16 - cY);
       }
-      height += terrain[i * depth + j];
+      height += terrain[i * depth + j].len;
+      if (terrain[i * depth + j - 1].len) {
+        if (((i + height) & 0b1001) == 0) {
+          int fId = ((i + height) >> 1) & 0b11;
+          float fX = i * tileSize + 16 - cX, fY = 360.0f - ((height + 1) * tileSize) + 24 - cY;
+          groundTex.setClip(64 + 8 * fId, 72 + 8 * fId, 0, 16);
+          groundTex.render(fX, fY);
+        }
+      }
     }
-    if (depth % 2 == 0) {
+    if (solidTop) {
       groundTex.setClip(0, 32, 0, 32);
       while ((height * tileSize) + cY < 360) { // height * tileSize - cY < 360
         groundTex.render(i * tileSize + 16 - cX, 360.0f - ((height + 1) * tileSize) + 16 - cY);
@@ -141,36 +151,28 @@ void Level::end() {
 }
 
 void Level::modCam(float &cX, float &cY, float pX, float pY) {
-  int wPX = pX / tileSize;
-  int wPY = (360.0f - pY) / tileSize;
   if (cX < 0.0f) cX = 0.0f;
   if (cX > (length - 20) * tileSize) cX = (length - 20) * tileSize;
+  if (cY > 0.0f) cY = 0.0f;
+}
+
+bool Level::inTile(float x, float y, char tile) {
+  return typeAt(x / tileSize, (360.0f - y) / tileSize + 1) == tile;
+}
+
+char Level::typeAt(int x, int y) {
+  if (x < 0 || x >= length) return 'S';
+  if (y < 0) return 'S';
   
-  int wPH = 0;
+  int h = 0, lH = 0;
   for (int i = 0; i < depth; i++) {
-    if (wPH + terrain[wPX * depth + i] > wPY) break;
-    wPH += terrain[wPX * depth + i];
+    h += terrain[x * depth + i].len;
+    if (y <= h && y >= lH) return terrain[x * depth + i].type;
+    lH = h;
   }
-  if (wPY - wPH < 8) {
-    float camTarget = 90.0f - wPH * tileSize;
-    cY += (camTarget - cY) / 8.0f;
-    if (cY > 0.0f) cY = 0.0f;
-  }
+  return solidTop ? 'S' : 'E';
 }
 
 bool Level::inFloor(float x, float y) {
-  int pX = x / tileSize;
-  int pY = (360.0f - y) / tileSize + 1;
-  int h = 0, lH = 0;
-  bool isSolid = 1;
-  
-  if (pX < 0 || pX >= length || pY < 0) return 1;
-  
-  for (int i = 0; i < depth; i++) {
-    h += terrain[pX * depth + i];
-    if (pY <= h && pY >= lH) return isSolid;
-    lH = h;
-    isSolid = !isSolid;
-  }
-  return isSolid;
+  return inTile(x, y, 'S');
 }

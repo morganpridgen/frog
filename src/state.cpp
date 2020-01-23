@@ -35,12 +35,13 @@ void PlayState::render() {
   
   char gui[16];
   sprintf(gui, "Flies: %i/%i", totalFlies() - liveFlies(), totalFlies());
-  TXL_Texture *guiTex = TXL_RenderText(gui, 1.0f, 1.0f, 1.0f);
-  guiTex->setColorMod(0.625f, 0.625f, 0.625f);
-  for (int i = 0; i < 9; i++) guiTex->render(16.0f + guiTex->width() / 2.0f - ((i % 3) - 1), 344.0f - guiTex->height() / 2.0f - ((i / 3) - 1));
-  guiTex->setColorMod(1.0f, 1.0f, 1.0f);
-  guiTex->render(16.0f + guiTex->width() / 2.0f, 344.0f - guiTex->height() / 2.0f);
-  delete guiTex;
+  TXL_Texture guiTex;
+  TXL_RenderText(&guiTex, gui, 1.0f, 1.0f, 1.0f);
+  guiTex.setColorMod(0.625f, 0.625f, 0.625f);
+  for (int i = 0; i < 9; i++) guiTex.render(16.0f + guiTex.width() / 2.0f - ((i % 3) - 1), 344.0f - guiTex.height() / 2.0f - ((i / 3) - 1));
+  guiTex.setColorMod(1.0f, 1.0f, 1.0f);
+  guiTex.render(16.0f + guiTex.width() / 2.0f, 344.0f - guiTex.height() / 2.0f);
+  guiTex.free();
   
   if (endTimer > 60) TXL_RenderQuad(320, 180, 640, 360, {1.0f, 1.0f, 1.0f, fmin(endTimer - 60, 60) / 60.0f});
 }
@@ -117,16 +118,17 @@ void LevelSelectState::render() {
   }
   frogTex.render(48, 288);
   
-  TXL_Texture *levelTex = TXL_RenderText(levelList[selectedLevel], 1.0f, 1.0f, 1.0f);
-  levelTex->setColorMod(0.625f, 0.625f, 0.625f);
-  for (int i = 0; i < 9; i++) levelTex->render(321.0f - (i % 3), 181.0f - (i / 3));
-  levelTex->setColorMod(1.0f, 1.0f, 1.0f);
-  levelTex->render(320.0f, 180.0f);
+  TXL_Texture levelTex;
+  TXL_RenderText(&levelTex, levelList[selectedLevel], 1.0f, 1.0f, 1.0f);
+  levelTex.setColorMod(0.625f, 0.625f, 0.625f);
+  for (int i = 0; i < 9; i++) levelTex.render(321.0f - (i % 3), 181.0f - (i / 3));
+  levelTex.setColorMod(1.0f, 1.0f, 1.0f);
+  levelTex.render(320.0f, 180.0f);
   
-  lBX = fmin(320.0f - 16.0f - float(levelTex->width()) / 2.0f, 160.0f), rBX = fmax(320.0f + 16.0f + float(levelTex->width()) / 2.0f, 480.0f);
+  lBX = fmin(320.0f - 16.0f - float(levelTex.width()) / 2.0f, 160.0f), rBX = fmax(320.0f + 16.0f + float(levelTex.width()) / 2.0f, 480.0f);
   arrowTex.render(lBX, 180.0f, 1.0f + 0.25f * float(mOnLB), 1.0f + 0.25f * float(mOnLB));
   arrowTex.render(rBX, 180.0f, 1.0f + 0.25f * float(mOnRB), 1.0f + 0.25f * float(mOnRB), 180.0f);
-  delete levelTex;
+  levelTex.free();
   
   TXL_RenderQuad(mX, mY, 18, 4, {0.625f, 0.625f, 0.625f, 1.0f});
   TXL_RenderQuad(mX, mY, 4, 18, {0.625f, 0.625f, 0.625f, 1.0f});

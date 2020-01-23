@@ -104,22 +104,18 @@ void Frog::colCalc(Level &lvl) {
     for (int i = 0; i < 128; i++) {
       if (!isInFloor(0.0f, 0.0f - i, lvl)) { // floor check
         info.y -= i + 1;
-        info.yV = round(info.yV * -0.5f);
-        info.xV = round(info.xV * 0.5f);
-        if (info.yV > -3.0f) {
-          info.xV = 0.0f;
-          info.yV = 0.0f;
-          info.grounded = 1;
-        }
+        info.xV = 0.0f;
+        info.yV = 0.0f;
+        info.grounded = 1;
         floor = 1;
         break;
       }
-      if (!isInFloor(0.0f - i, 0.0f, lvl)) { // left wall check
+      if (!isInFloor(0.0f - i, 0.0f, lvl)) { // right wall check
         info.x -= i + 1;
         info.xV = round(info.xV * -0.75f);
         break;
       }
-      if (!isInFloor(0.0f + i, 0.0f, lvl)) { // right wall check
+      if (!isInFloor(0.0f + i, 0.0f, lvl)) { // left wall check
         info.x += i + 1;
         info.xV = round(info.xV * -0.75f);
         break;
@@ -178,5 +174,6 @@ void Frog::end() {
 
 void Frog::modCam(float &cX, float &cY, Level &lvl) {
   cX += (info.x - cX - 320.0f) / 8.0f;
+  if (info.grounded) cY += (info.y - cY - 225.0f) / 8.0f;
   lvl.modCam(cX, cY, info.x, info.y);
 }

@@ -5,10 +5,18 @@ class Level;
 
 #include "frog.h"
 
+struct TileSpan {
+  char type;
+  int len;
+};
+
 class Level {
   private:
-    int *terrain;
+    TileSpan *terrain;
     int length, depth;
+    bool solidTop;
+    bool inTile(float, float, char);
+    char typeAt(int, int);
     int cloudScroll;
   public:
     bool init(const char*, Frog&);
