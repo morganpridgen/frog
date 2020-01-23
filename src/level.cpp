@@ -53,14 +53,26 @@ bool Level::init(const char *name, Frog &frog) {
     int fY = nextInt(&f);
     addFly({fX * tileSize + tileSize / 2.0f, 360.0f - (fY * tileSize + tileSize / 2.0f)});
   }
+  f.close();
   sprintf(path, "%s/frog.txt", root);
   if (!f.init(TXL_DataPath(path), 'r')) return 0;
   int fX, fY;
   fX = nextInt(&f);
   fY = nextInt(&f);
   frog.setPos(fX * tileSize + tileSize / 2.0f, 360.0f - (fY * tileSize));
+  f.close();
+  sprintf(path, "%s/terraintype.txt", root);
+  if (!f.init(TXL_DataPath(path), 'r')) return 0;
+  for (int i = 0; i < 15; i++) {
+    char tmp;
+    if (!f.read(&tmp, sizeof(tmp)) || tmp < ' ') break;
+    terrainType[i] = tmp;
+    terrainType[i + 1] = 0;
+  }
+  f.close();
   
-  if (!groundTex.load(TXL_DataPath((depth % 2) ? "terrain/ground.png" : "terrain/stone.png"), 96, 32)) return 0;
+  sprintf(path, "terrain/%s.png", terrainType);
+  if (!groundTex.load(TXL_DataPath(path), 96, 32)) return 0;
   return 1;
 }
 
@@ -69,26 +81,33 @@ void Level::update() {
 }
 
 void Level::render(float cX, float cY) {
-  if (!solidTop) {
-    for (int i = 0; i < 45; i++) {
-      TXL_RenderQuad({0.0f, 8.0f * i, 640.0f, 8.0f}, {fmin(-cY / 5120.0f, 0.5f), (90 - i) / 90.0f, (90 - i) / 90.0f, 1.0f});
+  if (!strcmp(terrainType, "ground")) {
+    for (int i = 0; i < 360; i++) {
+      TXL_RenderQuad({0.0f, 1.0f * i, 640.0f, 1.0f}, {fmin(-cY / 5120.0f, 0.5f), (720 - i) / 720.0f, (720 - i) / 720.0f, 1.0f});
     }
     
     for (int i = cX / 512.0f; i < (cX + 640.0f * 8.0f) / 512.0f + 2; i++) {
       for (int j = 0; j < (270.0f - cY) / 256.0f + 2; j++) {
-        if (j < 8 && i % 2)
+        if (j < 8 && i % 2) continue;
         TXL_RenderQuad(i * 64.0f + float(j % 2) * float(1 + (j < 8)) * 32.0f - (float(cloudScroll) / 8.0f) - cX / 8.0f, j * -32.0f + 90.0f - cY / 8.0f, 16, 8, {1.0f, 1.0f, 1.0f, 0.5f});
       }
     }
     
     groundTex.setColorMod(0.75f, 0.75f, 0.75f);
+    for (int i = cX / tileSize; i < (cX + 2560.0f) / tileSize + 1; i++) {
+      for (int j = 0; j < 20 + (i / 4) % 2; j++) {
+        groundTex.setClip(32 * (j == 19 + (i / 4) % 2), 32 * (j == 19 + (i / 4) % 2) + 32, 0, 32);
+        groundTex.render(i * (tileSize / 4.0f) - cX / 4.0f, 360.0f - (j * tileSize / 4.0f) - cY / 4.0f, 0.25f, 0.25f);
+      }
+    }
     for (int i = cX / tileSize; i < (cX + 1280.0f) / tileSize + 1; i++) {
-      for (int j = 0; j < 10 + (i / 4) % 2; j++) {
-        groundTex.setClip(32 * (j == 9 + (i / 4) % 2), 32 * (j == 9 + (i / 4) % 2) + 32, 0, 32);
+      for (int j = 0; j < 7 + (i / 4) % 2; j++) {
+        groundTex.setClip(32 * (j == 6 + (i / 4) % 2), 32 * (j == 6 + (i / 4) % 2) + 32, 0, 32);
         groundTex.render(i * (tileSize / 2.0f) - cX / 2.0f, 360.0f - (j * tileSize / 2.0f) - cY / 2.0f, 0.5f, 0.5f);
       }
     }
-  } else {
+  }
+  if (!strcmp(terrainType, "stone")) {
     groundTex.setClip(0, 32, 0, 32);
     
     groundTex.setColorMod(0.25f, 0.25f, 0.25f);
@@ -106,7 +125,6 @@ void Level::render(float cX, float cY) {
     }
   }
   
-  groundTex.setColorMod(1.0f, 1.0f, 1.0f);
   for (int i = cX / tileSize; i < (cX + 640.0f) / tileSize; i++) {
     int height = 0;
     for (int j = 0; j < depth; j++) {
@@ -119,22 +137,30 @@ void Level::render(float cX, float cY) {
         switch (terrain[i * depth + j].type) {
           case 'S': {
             bool isTop = typeAt(i, height + k + 2) != 'S'; // k == terrain[i * depth + j].len - 1
+            groundTex.setColorMod(1.0f, 1.0f, 1.0f);
             groundTex.setClip(32 * isTop, 32 * isTop + 32, 0, 32);
             groundTex.render(i * tileSize + 16 - cX, 360.0f - ((k + height + 1) * tileSize) + 16 - cY);
+            break;
+          }
+          case 'B': {
+            groundTex.setColorMod(0.75f, 0.75f, 0.75f);
+            groundTex.setClip(0, 32, 0, 32);
+            groundTex.render(i * tileSize + 16 - cX, 360.0f - ((k + height + 1) * tileSize) + 16 - cY);
+            break;
           }
         }
       }
-      height += terrain[i * depth + j].len;
-      if (terrain[i * depth + j - 1].len) {
-        if (((i + height) & 0b1001) == 0) {
-          int fId = ((i + height) >> 1) & 0b11;
-          float fX = i * tileSize + 16 - cX, fY = 360.0f - ((height + 1) * tileSize) + 24 - cY;
-          groundTex.setClip(64 + 8 * fId, 72 + 8 * fId, 0, 16);
-          groundTex.render(fX, fY);
-        }
+      if (terrain[i * depth + j].len && terrain[i * depth + j - 1].type == 'S' && ((i + height) & 0b1001) == 0) {
+        int fId = ((i + height) >> 1) & 0b11;
+        float fX = i * tileSize + 16 - cX, fY = 360.0f - ((height + 1) * tileSize) + 24 - cY;
+        groundTex.setColorMod(1.0f, 1.0f, 1.0f);
+        groundTex.setClip(64 + 8 * fId, 72 + 8 * fId, 0, 16);
+        groundTex.render(fX, fY);
       }
+      height += terrain[i * depth + j].len;
     }
     if (solidTop) {
+      groundTex.setColorMod(1.0f, 1.0f, 1.0f);
       groundTex.setClip(0, 32, 0, 32);
       while ((height * tileSize) + cY < 360) { // height * tileSize - cY < 360
         groundTex.render(i * tileSize + 16 - cX, 360.0f - ((height + 1) * tileSize) + 16 - cY);

@@ -45,9 +45,9 @@ def genTerrain(surf, top):
     out.append(col)
     if len(col) > d: d = len(col)
   print("Depth of level is %i" % d)
-  if d % 2 == top:
+  """if d % 2 == top:
     print("Modifying depth to %s the top." % ("cap" if top else "uncap"))
-    d -= 1
+    d -= 1"""
   
   for i in range(surf.get_width()):
     while len(out[i]) < d: out[i].append((0, colorToType((255, 255, 255))))

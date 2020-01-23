@@ -15,6 +15,7 @@ class Level {
     TileSpan *terrain;
     int length, depth;
     bool solidTop;
+    char terrainType[16];
     bool inTile(float, float, char);
     char typeAt(int, int);
     int cloudScroll;
